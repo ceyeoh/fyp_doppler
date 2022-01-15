@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block heading %}Home{% endblock heading %}
+{% block content %}
+<section id="contents">
+    <div class="container-xxl">
+        <div class="row g-4">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card text-center">
+                    <!-- https://storyset.com/illustration/ebook/bro#DDA8E5FF&hide=Window,Plant&hide=simple -->
+                    <img src="{{url_for('static',filename = 'images/get-info.png')}}" alt="get-info"
+                        class="card-img-top bg-white">
+                    <div class="card-body bg-white">
+                        <h5 class="card-title bg-white">Latest Info</h5>
+                        <p class="card-text bg-white">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Reprehenderit
+                            facilis, architecto sed blanditiis quo laborum cum saepe tempore repudiandae possimus
+                            nostrum? Architecto inventore error voluptates iure recusandae harum nulla officiis!</p>
+                        <a href="/info" class="btn btn-primary">Read Now</a>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card text-center">
+                    <!-- https://storyset.com/illustration/mental-health/rafiki#DDA8E5FF&hide=character-2&hide=simple -->
+                    <img src="{{url_for('static',filename = 'images/self-diagnose.png')}}" alt="self-diagnose"
+                        class="card-img-top bg-white">
+                    <div class="card-body bg-white">
+                        <h5 class="card-title bg-white">Self Diagnose</h5>
+                        <p class="card-text bg-white">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Reprehenderit
+                            facilis, architecto sed blanditiis quo laborum cum saepe tempore repudiandae possimus
+                            nostrum? Architecto inventore error voluptates iure recusandae harum nulla officiis!</p>
+                        <a href="/diagnose" class="btn btn-primary">Diagnose Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+                <div class="card text-center">
+                    <!-- https://storyset.com/illustration/medical-care/amico#DDA8E5FF&hide=Symbol&hide=complete -->
+                    <img src="{{url_for('static',filename = 'images/make-appointment.png')}}" alt="make-appointment"
+                        class="card-img-top bg-white">
+                    <div class="card-body bg-white">
+                        <h5 class="card-title bg-white">Make Appointment</h5>
+                        <p class="card-text bg-white">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Reprehenderit
+                            facilis, architecto sed blanditiis quo laborum cum saepe tempore repudiandae possimus
+                            nostrum? Architecto inventore error voluptates iure recusandae harum nulla officiis!</p>
+                        <a href="/appointment" class="btn btn-primary">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

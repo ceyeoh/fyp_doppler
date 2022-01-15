@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block heading %}Appointment{% endblock heading %}
+{% block content %}
+<section id="appointment">
+    <div class="container-xxl">
+        <h1>This is appointment.</h1>
+        <form>
+            <div class="row form-group p-3">
+                <label for="date" class="col-sm-1 col-form-label">Date</label>
+                <div class="col-sm-4">
+                    <div class="input-group date" id="datepicker">
+                        <input type="text" class="form-control">
+                        <span class="input-group-append">
+                            <span class="input-group-text bg-white d-block">
+                                <!-- <i class="fa fa-calendar"></i> -->
+                                <img src="https://img.icons8.com/ios-filled/24/000000/calendar--v1.png" style="background-color:white"/>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row form-group p-3">
+                <label for="comment" class="col-sm-1 col-form-label">Comments</label>
+                <div class="col-sm-4">
+                    <textarea class="form-control" id="comments" cols="30" rows="15"></textarea>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start p-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <!-- <a class="w-100 btn btn-lg btn-primary" href="/home" role="button">Submit</a> -->
+            </div>
+
+        </form>
+    </div>
+</section>
+{% endblock %}

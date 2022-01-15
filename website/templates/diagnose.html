@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block heading %}Diagnose{% endblock heading%}
+{% block content %}
+<section id="contents">
+    <div class="container-xxl">
+        <h1 class="text-center">
+            FGR Detection System
+        </h1>
+        <p class="desc text-center m-5">The latest AI powered FGR Detection System by Peguin Healthcare. Lorem ipsum
+            dolor sit amet consectetur adipisicing elit. Ipsa ut quisquam tenetur deleniti? Aliquid pariatur ipsam
+            accusamus culpa saepe neque recusandae illo animi natus, officia delectus sequi debitis ducimus quia!
+        </p>
+        <p>
+            <br>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% if "successfully" in messages[0] %}
+        <div class="alert alert-success" role="alert">
+            {{ messages[0] }}
+        </div>
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            {{ messages[0] }}
+        </div>
+        {% endif %}
+        {% endif %}
+        {% endwith %}
+        </p>
+        <br>
+        <div class="container">
+            <div class="row row-cols-1 row-cols-md-2">
+                {% for img_dat in img_data %}
+                <div class="col mx-auto"><br>
+                    <div class="card text-center" style="width: 40rem;">
+                        <img src="data:image/jpeg;base64,{{ img_dat }}" class="card-img-top smalling mx-auto" alt="...">
+                        <div class="card-body">
+                            <p class="card-text">{{ res[loop.index0] }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div>
+            <form action="" method="POST" enctype="multipart/form-data">
+                <input type="file" name="file" autocomplete="off" required>
+                <p>Drag your files here or click in this area.</p>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
