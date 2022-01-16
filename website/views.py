@@ -14,19 +14,19 @@ views = Blueprint(
 @views.route("/home")
 @login_required
 def home():
-    return render_template("home.html")
+    return render_template("home.html", user=current_user)
 
 
 @views.route("/info")
 @login_required
 def info():
-    return render_template("info.html")
+    return render_template("info.html", user=current_user)
 
 
 @views.route("/appointment")
 @login_required
 def appointment():
-    return render_template("appointment.html")
+    return render_template("appointment.html", user=current_user)
 
 
 @views.route("/diagnose", methods=["GET", "POST"])
@@ -40,7 +40,6 @@ def diagnose():
         elif not allowed_file(f.filename):
             flash("Invalid file type.")
             return redirect(request.url)
-
         imgList = [loader(f)]
         flash("Upload successfully.")
 
@@ -54,6 +53,6 @@ def diagnose():
             decoded_img_data = encoded_img_data.decode("utf-8")
             img_data.append(decoded_img_data)
         out = inference(imgList)
-        return render_template("diagnose.html", img_data=img_data, res=out)
+        return render_template("diagnose.html", img_data=img_data, res=out, user=current_user)
     else:
-        return render_template("diagnose.html")
+        return render_template("diagnose.html", user=current_user)

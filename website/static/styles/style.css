@@ -17,7 +17,8 @@ nav div.container-xxl,
 .navbar-nav,
 .navbar-toggler-icon,
 .collapse,
-#btnLogin {
+#btnLogout
+ {
   background-color: rgb(161, 216, 238);
 }
 
