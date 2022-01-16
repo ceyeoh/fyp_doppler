@@ -3,6 +3,7 @@ import base64
 from flask import Blueprint, render_template, request, flash, redirect
 from .utils import allowed_file, find_y, find_x, loader
 from .model import inference
+from flask_login import login_required, current_user
 
 views = Blueprint(
     "views",
@@ -11,21 +12,25 @@ views = Blueprint(
 
 
 @views.route("/home")
-def index():
+@login_required
+def home():
     return render_template("home.html")
 
 
 @views.route("/info")
+@login_required
 def info():
     return render_template("info.html")
 
 
 @views.route("/appointment")
+@login_required
 def appointment():
     return render_template("appointment.html")
 
 
 @views.route("/diagnose", methods=["GET", "POST"])
+@login_required
 def diagnose():
     if request.method == "POST":
         f = request.files["file"]
