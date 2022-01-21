@@ -3,13 +3,14 @@
 {% block content %}
 <section id="appointment">
     <div class="container-xxl">
-        <h1>This is appointment.</h1>
-        <form>
+        <h1>Appointments</h1>
+        <h6>We will contact you soon to confirm with your requested appointment.</h6>
+        <form method="POST">
             <div class="row form-group p-3">
                 <label for="date" class="col-sm-1 col-form-label">Date</label>
                 <div class="col-sm-4">
                     <div class="input-group date" id="datepicker">
-                        <input type="text" class="form-control">
+                        <input type="text" class="form-control" name="date" id="date">
                         <span class="input-group-append">
                             <span class="input-group-text bg-white d-block">
                                 <!-- <i class="fa fa-calendar"></i> -->
@@ -23,7 +24,7 @@
             <div class="row form-group p-3">
                 <label for="comment" class="col-sm-1 col-form-label">Comments</label>
                 <div class="col-sm-4">
-                    <textarea class="form-control" id="comments" cols="30" rows="15"></textarea>
+                    <textarea class="form-control" id="comment" name="comment" cols="30" rows="15"></textarea>
                 </div>
             </div>
 
@@ -31,8 +32,17 @@
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <!-- <a class="w-100 btn btn-lg btn-primary" href="/home" role="button">Submit</a> -->
             </div>
-
         </form>
+        <div class="row form-group p-3">
+            <ul class="list-group list-group-flush col-sm-6" id="notes">
+                {% for appointment in user.appointments %}
+                <li style="background-color:aliceblue" class="list-group-item">
+                <h4>{{ appointment.date }}</h4>
+                <p>{{ appointment.comment }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
 </section>
 {% endblock %}

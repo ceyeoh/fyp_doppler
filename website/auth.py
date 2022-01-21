@@ -28,13 +28,17 @@ def signup():
         elif len(password0) < 6:
             flash("Password must be at least 6 characters!", category="error")
         elif password0 != password1:
-            flash("Passwords don\'t match!", category="error")
+            flash("Passwords don't match!", category="error")
         else:
-            new_user = User(firstname=firstname, email=email, password=generate_password_hash(password0, method='sha256'))
+            new_user = User(
+                firstname=firstname,
+                email=email,
+                password=generate_password_hash(password0, method="sha256"),
+            )
             db.session.add(new_user)
             db.session.commit()
-            # flash("Account created successfully!", category="succcess")
-            return redirect(url_for('views.home'))
+            flash("Account created successfully!", category="succcess")
+            return redirect(url_for("views.home"))
     return render_template("signup.html", user=current_user)
 
 
@@ -50,15 +54,16 @@ def login():
             if check_password_hash(user.password, password):
                 # flash("Login successfully!", category="success")
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
+                return redirect(url_for("views.home"))
             else:
                 flash("Incorrect password, try again!", category="error")
         else:
             flash("Email does not exist!", category="error")
     return render_template("login.html", user=current_user)
 
-@auth.route('/logout')
+
+@auth.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for("auth.login"))

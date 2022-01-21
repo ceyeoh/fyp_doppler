@@ -1,9 +1,11 @@
 import io
 import base64
-from flask import Blueprint, render_template, request, flash, redirect
+from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .utils import allowed_file, find_y, find_x, loader
 from .model import inference
 from flask_login import login_required, current_user
+from .database import Appointment
+from . import db
 
 views = Blueprint(
     "views",
@@ -23,9 +25,26 @@ def info():
     return render_template("info.html", user=current_user)
 
 
-@views.route("/appointment")
+@views.route("/appointment", methods=["GET", "POST"])
 @login_required
 def appointment():
+    if request.method == "POST":
+        date = request.form.get("date")
+        comment = request.form.get("comment")
+        print(date, comment)
+        if len(comment) < 1:
+            flash("Please enter a comment", category="alert")
+            # return redirect(request.url)
+        else:
+            new_appointment = Appointment(
+                date=date,
+                comment=comment,
+                user_id=current_user.id
+            )
+            db.session.add(new_appointment)
+            db.session.commit()
+            flash("Appointment has been added", category="success")
+            # return redirect(url_for("views.appointment"))
     return render_template("appointment.html", user=current_user)
 
 
