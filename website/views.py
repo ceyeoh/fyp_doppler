@@ -33,9 +33,10 @@ def appointment():
         date = request.form.get("date")
         comment = request.form.get("comment")
         print(date, comment)
-        if len(comment) < 1:
-            flash("Please enter a comment", category="error")
-            # return redirect(request.url)
+        if len(date) < 1:
+            flash("Please select date.", category="error")
+        elif len(comment) < 1:
+            flash("Please enter comments.", category="error")
         else:
             new_appointment = Appointment(
                 date=date,
@@ -44,7 +45,7 @@ def appointment():
             )
             db.session.add(new_appointment)
             db.session.commit()
-            # flash("Appointment has been added", category="success")
+            flash("Appointment has been requested.", category="success")
             # return redirect(url_for("views.appointment"))
     return render_template("appointment.html", user=current_user)
 
@@ -81,11 +82,11 @@ def diagnose():
 @login_required
 def delete_appointment():
     appointment = json.loads(request.data)
-    print(appointment)
     appointmentId = appointment["appointmentId"]
     appointment = Appointment.query.get(appointmentId)
     if appointment:
         if appointment.user_id == current_user.id:
             db.session.delete(appointment)
             db.session.commit()
+            flash("Appointment has been cancelled.", category="success")
     return jsonify({})
