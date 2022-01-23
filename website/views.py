@@ -1,11 +1,12 @@
 import io
 import base64
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from .utils import allowed_file, find_y, find_x, loader
 from .model import inference
 from flask_login import login_required, current_user
 from .database import Appointment
 from . import db
+import json
 
 views = Blueprint(
     "views",
@@ -33,7 +34,7 @@ def appointment():
         comment = request.form.get("comment")
         print(date, comment)
         if len(comment) < 1:
-            flash("Please enter a comment", category="alert")
+            flash("Please enter a comment", category="error")
             # return redirect(request.url)
         else:
             new_appointment = Appointment(
@@ -43,7 +44,7 @@ def appointment():
             )
             db.session.add(new_appointment)
             db.session.commit()
-            flash("Appointment has been added", category="success")
+            # flash("Appointment has been added", category="success")
             # return redirect(url_for("views.appointment"))
     return render_template("appointment.html", user=current_user)
 
@@ -75,3 +76,16 @@ def diagnose():
         return render_template("diagnose.html", img_data=img_data, res=out, user=current_user)
     else:
         return render_template("diagnose.html", user=current_user)
+
+@views.route("/delete-appointment", methods=["POST"])
+@login_required
+def delete_appointment():
+    appointment = json.loads(request.data)
+    print(appointment)
+    appointmentId = appointment["appointmentId"]
+    appointment = Appointment.query.get(appointmentId)
+    if appointment:
+        if appointment.user_id == current_user.id:
+            db.session.delete(appointment)
+            db.session.commit()
+    return jsonify({})
