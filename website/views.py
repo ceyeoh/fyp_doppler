@@ -90,3 +90,8 @@ def delete_appointment():
             db.session.commit()
             flash("Appointment has been cancelled.", category="success")
     return jsonify({})
+
+@views.route("/sample-ultrasound")
+@login_required
+def sample():
+    return render_template("sample_ultrasound.html", user=current_user)

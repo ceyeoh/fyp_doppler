@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block heading %}Sample{% endblock heading %}
+{% block content %}
+<section id="contents">
+    <div class="container-xxl">
+        <div class="text-center">
+            <h1>Sample Ultrasoud Image</h1>
+            <br>
+            <img alt="sample-ultrasound-image" src="{{url_for('static',filename = 'images/sample-ultrasound.jpg')}}">
+        </div>
+    </div>
+</section>
+{% endblock %}
