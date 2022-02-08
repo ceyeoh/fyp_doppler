@@ -1,0 +1,20 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+plt.figure(figsize=(15,5))
+plt.subplot(1,3,1)
+plt.title('Training set')
+plt.bar(x=['normal', 'fgr'], height=[61, 9], color=['tab:blue', 'tab:red'])
+plt.xlabel('label')
+plt.ylabel('counts')
+plt.subplot(1,3,2)
+plt.title('Validation set')
+plt.bar(x=['normal', 'fgr'], height=[5, 5], color=['tab:blue', 'tab:red'])
+plt.xlabel('label')
+plt.ylabel('counts')
+plt.subplot(1,3,3)
+plt.title('Test set')
+plt.bar(x=['normal', 'fgr'], height=[5, 5], color=['tab:blue', 'tab:red'])
+plt.xlabel('label')
+plt.ylabel('counts')
+plt.show()
