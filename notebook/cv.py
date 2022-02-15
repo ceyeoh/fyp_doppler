@@ -82,128 +82,81 @@ cv_set = {
     "val": [],
 }
 for idx, (train_index, val_index) in enumerate(scv.split(x_cv, y_cv)):
-    # print(f"Split {idx}")
-    # print(f"Total train: {len(train_index)}")
-    # print(f"Total val: {len(val_index)}")
-    cv_set["train"].append(df_cv.loc[train_index])
-    cv_set["val"].append(df_cv.loc[val_index])
-    # print("Val label:", cv_set["val"][idx]["label"].tolist())
-    # print("\n")
+    print(f"Split {idx}")
+    print(f"Total train: {len(train_index)}")
+    print(f"Total val: {len(val_index)}")
+    # cv_set["train"].append(df_cv.loc[train_index])
+    # cv_set["val"].append(df_cv.loc[val_index])
+    print("Val label:", cv_set["val"][idx]["label"].tolist())
+    print("\n")
 
-transform = {
-    "train": A.Compose(
-        [
-            A.CLAHE(p=0.8),
-            A.RandomCrop(112, 112),
-            A.Normalize(
-                mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0], max_pixel_value=255.0
-            ),
-            ToTensorV2(),
-        ]
-    ),
-    "test": A.Compose(
-        [
-            A.Normalize(
-                mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0], max_pixel_value=255.0
-            ),
-            ToTensorV2(),
-        ]
-    ),
-}
+# transform = {
+#     "train": A.Compose(
+#         [
+#             A.CLAHE(p=0.8),
+#             A.RandomCrop(112, 112),
+#             A.Normalize(
+#                 mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0], max_pixel_value=255.0
+#             ),
+#             ToTensorV2(),
+#         ]
+#     ),
+#     "test": A.Compose(
+#         [
+#             A.Normalize(
+#                 mean=[0.0, 0.0, 0.0], std=[1.0, 1.0, 1.0], max_pixel_value=255.0
+#             ),
+#             ToTensorV2(),
+#         ]
+#     ),
+# }
 
-class DopplerDataset(Dataset):
-    def __init__(self, df, transform=None):
-        self.df = df
-        self.img = self.df["pixels"]
-        self.lbl = self.df["label"]
-        self.transform = transform
+# class DopplerDataset(Dataset):
+#     def __init__(self, df, transform=None):
+#         self.df = df
+#         self.img = self.df["pixels"]
+#         self.lbl = self.df["label"]
+#         self.transform = transform
 
-    def __len__(self):
-        return len(self.df)
+#     def __len__(self):
+#         return len(self.df)
 
-    def __getitem__(self, idx):
-        img = self.img[idx]
-        lbl = self.lbl[idx]
-        if self.transform:
-            img = self.transform(image=np.array(img))["image"]
-        return img, lbl
-
-
-def train(epoch, loader, net, model_name, split):
-    net.train()
-    totalLoss = 0
-    correct = 0
-    total = 0
-    pbar = tqdm(loader, desc=f"Training split {split} {model_name}: {epoch+1}/{n_epoch}")
-    for X, y in pbar:
-        X, y = X.to(DEVICE), y.to(DEVICE)
-        optimizer.zero_grad()
-        out = net(X)
-        y = y.unsqueeze(dim=1).float()
-        loss = criterion(out, y)
-        loss.backward()
-        optimizer.step()
-        totalLoss += loss.item()
-        pred = (torch.sigmoid(out) > 0.5).float()
-        total += y.size(0)
-        correct += pred.eq(y).cpu().sum()
-        pbar.set_postfix({"loss": (totalLoss), "acc": (100.0 * correct / total).item()})
-    acc = (100.0 * correct / total).item()
-    return acc, totalLoss
+#     def __getitem__(self, idx):
+#         img = self.img[idx]
+#         lbl = self.lbl[idx]
+#         if self.transform:
+#             img = self.transform(image=np.array(img))["image"]
+#         return img, lbl
 
 
-def evaluate_val(epoch, loader, net, model_name, split):
-    net.eval()
-    totalLoss = 0
-    correct = 0
-    total = 2
-    pbar = tqdm(loader, desc=f"Evaluating split {split} {model_name}: {epoch+1}/{n_epoch}")
-    with torch.no_grad():
-        for X, y in pbar:
-            X, y = X.to(DEVICE), y.to(DEVICE)
-            out = net(X)
-            y = y.unsqueeze(dim=1).float()
-            loss = criterion(out, y)
-            totalLoss += loss.item()
-            pred = (torch.sigmoid(out) > 0.5).float()
-            # total += y.size(0)
-            weight = 1/val_counts[1] if y.item()==1 else 1/val_counts[0]
-            correct += pred.eq(y).cpu().sum()*weight
-            pbar.set_postfix(
-                {"loss": (totalLoss), "acc": (100.0 * correct / total).item()}
-            )
-    acc = (100.0 * correct / total).item()
-    return acc, totalLoss
-
-
-def evaluate_test(epoch, loader, net, model_name, split):
-    net.eval()
-    totalLoss = 0
-    correct = 0
-    total = 2
-    pbar = tqdm(loader, desc=f"Evaluating split {split} {model_name}: {epoch+1}/{n_epoch}")
-    with torch.no_grad():
-        for X, y in pbar:
-            X, y = X.to(DEVICE), y.to(DEVICE)
-            out = net(X)
-            y = y.unsqueeze(dim=1).float()
-            loss = criterion(out, y)
-            totalLoss += loss.item()
-            pred = (torch.sigmoid(out) > 0.5).float()
-            # total += y.size(0)
-            weight = 1/test_counts[1] if y.item()==1 else 1/test_counts[0]
-            correct += pred.eq(y).cpu().sum()*weight
-            pbar.set_postfix(
-                {"loss": (totalLoss), "acc": (100.0 * correct / total).item()}
-            )
-    acc = (100.0 * correct / total).item()
-    return acc, totalLoss
-
-# def evaluate_test(epoch, loader, net, model_name, split):
-#     net.eval()
+# def train(epoch, loader, net, model_name, split):
+#     net.train()
 #     totalLoss = 0
 #     correct = 0
 #     total = 0
+#     pbar = tqdm(loader, desc=f"Training split {split} {model_name}: {epoch+1}/{n_epoch}")
+#     for X, y in pbar:
+#         X, y = X.to(DEVICE), y.to(DEVICE)
+#         optimizer.zero_grad()
+#         out = net(X)
+#         y = y.unsqueeze(dim=1).float()
+#         loss = criterion(out, y)
+#         loss.backward()
+#         optimizer.step()
+#         totalLoss += loss.item()
+#         pred = (torch.sigmoid(out) > 0.5).float()
+#         total += y.size(0)
+#         correct += pred.eq(y).cpu().sum()
+#         pbar.set_postfix({"loss": (totalLoss), "acc": (100.0 * correct / total).item()})
+#     acc = (100.0 * correct / total).item()
+#     return acc, totalLoss
+
+
+# def evaluate_val(epoch, loader, net, model_name, split):
+#     net.eval()
+#     totalLoss = 0
+#     correct = 0
+#     total = 2
 #     pbar = tqdm(loader, desc=f"Evaluating split {split} {model_name}: {epoch+1}/{n_epoch}")
 #     with torch.no_grad():
 #         for X, y in pbar:
@@ -213,8 +166,9 @@ def evaluate_test(epoch, loader, net, model_name, split):
 #             loss = criterion(out, y)
 #             totalLoss += loss.item()
 #             pred = (torch.sigmoid(out) > 0.5).float()
-#             total += y.size(0)
-#             correct += pred.eq(y).cpu().sum()
+#             # total += y.size(0)
+#             weight = 1/val_counts[1] if y.item()==1 else 1/val_counts[0]
+#             correct += pred.eq(y).cpu().sum()*weight
 #             pbar.set_postfix(
 #                 {"loss": (totalLoss), "acc": (100.0 * correct / total).item()}
 #             )
@@ -222,74 +176,120 @@ def evaluate_test(epoch, loader, net, model_name, split):
 #     return acc, totalLoss
 
 
-testset = DopplerDataset(df_test, transform=transform["test"])
-testLoader = DataLoader(testset, batch_size=1, shuffle=False)
-test_counts = df_test["label"].value_counts()
+# def evaluate_test(epoch, loader, net, model_name, split):
+#     net.eval()
+#     totalLoss = 0
+#     correct = 0
+#     total = 2
+#     pbar = tqdm(loader, desc=f"Evaluating split {split} {model_name}: {epoch+1}/{n_epoch}")
+#     with torch.no_grad():
+#         for X, y in pbar:
+#             X, y = X.to(DEVICE), y.to(DEVICE)
+#             out = net(X)
+#             y = y.unsqueeze(dim=1).float()
+#             loss = criterion(out, y)
+#             totalLoss += loss.item()
+#             pred = (torch.sigmoid(out) > 0.5).float()
+#             # total += y.size(0)
+#             weight = 1/test_counts[1] if y.item()==1 else 1/test_counts[0]
+#             correct += pred.eq(y).cpu().sum()*weight
+#             pbar.set_postfix(
+#                 {"loss": (totalLoss), "acc": (100.0 * correct / total).item()}
+#             )
+#     acc = (100.0 * correct / total).item()
+#     return acc, totalLoss
+
+# # def evaluate_test(epoch, loader, net, model_name, split):
+# #     net.eval()
+# #     totalLoss = 0
+# #     correct = 0
+# #     total = 0
+# #     pbar = tqdm(loader, desc=f"Evaluating split {split} {model_name}: {epoch+1}/{n_epoch}")
+# #     with torch.no_grad():
+# #         for X, y in pbar:
+# #             X, y = X.to(DEVICE), y.to(DEVICE)
+# #             out = net(X)
+# #             y = y.unsqueeze(dim=1).float()
+# #             loss = criterion(out, y)
+# #             totalLoss += loss.item()
+# #             pred = (torch.sigmoid(out) > 0.5).float()
+# #             total += y.size(0)
+# #             correct += pred.eq(y).cpu().sum()
+# #             pbar.set_postfix(
+# #                 {"loss": (totalLoss), "acc": (100.0 * correct / total).item()}
+# #             )
+# #     acc = (100.0 * correct / total).item()
+# #     return acc, totalLoss
 
 
-results = dict(
-    (
-        splits,
-        dict(
-            (metrics, list())
-            for metrics in [
-                "train_acc",
-                "train_loss",
-                "val_acc",
-                "val_loss",
-                "test_acc",
-                "test_loss",
-            ]
-        ),
-    )
-    for splits in range(8)
-)
-for split in range(len(cv_set["val"])):
-    df_train = cv_set["train"][split].reset_index(drop=True)
-    df_val = cv_set["val"][split].reset_index(drop=True)
-    trainset = DopplerDataset(df_train, transform=transform["train"])
-    valset = DopplerDataset(df_val, transform=transform["test"])
-    model_name = "mobilenet_v3_large-pretrained-adam"
-    model = get_model(model_name).to(DEVICE)
-    lr = 1e-4
-    n_epoch = 25
-    bs = 16
-    # filename = f"{model_name}-{lr}lr-{bs}bs-{n_epoch}e-split{split}-loss-weighted"
-    filename = f"{model_name}-{lr}lr-{bs}bs-{n_epoch}e-split{split}-loss-normal"
-    train_counts = df_train["label"].value_counts()
-    val_counts = df_val["label"].value_counts()
-    class_weights = list(1 / train_counts)
-    sample_weights = [0] * len(df_train)
-    for idx, row in df_train.iterrows():
-        class_weight = class_weights[row["label"]]
-        sample_weights[idx] = class_weight
-    sampler = WeightedRandomSampler(
-        sample_weights, num_samples=len(sample_weights), replacement=True
-    )
-    trainLoader = DataLoader(trainset, batch_size=bs, sampler=sampler)
-    valLoader = DataLoader(valset, batch_size=1, shuffle=False)
-    optimizer = optim.Adam(model.parameters(), lr=lr)
-    # criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(train_counts[1]/train_counts[0]))
-    criterion = nn.BCEWithLogitsLoss()
-    best_acc = 60.0
-    for epoch in range(n_epoch):
-        train_acc, train_loss = train(epoch, trainLoader, model, model_name, split)
-        val_acc, val_loss = evaluate_val(epoch, valLoader, model, model_name, split)
-        test_acc, test_loss = evaluate_test(epoch, testLoader, model, model_name, split)
-        results[split]["train_acc"].append(train_acc)
-        results[split]["train_loss"].append(train_loss)
-        results[split]["val_acc"].append(val_acc)
-        results[split]["val_loss"].append(val_loss)
-        results[split]["test_acc"].append(test_acc)
-        results[split]["test_loss"].append(test_loss)
-        if val_acc > best_acc:
-            best_acc = val_acc
-            print(f"Best val {best_acc}, saving...")
-            # torch.save(model, f"../model/{filename}-{best_acc}val-{epoch}e.pth")
+# testset = DopplerDataset(df_test, transform=transform["test"])
+# testLoader = DataLoader(testset, batch_size=1, shuffle=False)
+# test_counts = df_test["label"].value_counts()
 
-a_file = open(f"result_cv/{filename}.pkl", "wb")
-pickle.dump(results, a_file)
-a_file.close()
+
+# results = dict(
+#     (
+#         splits,
+#         dict(
+#             (metrics, list())
+#             for metrics in [
+#                 "train_acc",
+#                 "train_loss",
+#                 "val_acc",
+#                 "val_loss",
+#                 "test_acc",
+#                 "test_loss",
+#             ]
+#         ),
+#     )
+#     for splits in range(8)
+# )
+# for split in range(len(cv_set["val"])):
+#     df_train = cv_set["train"][split].reset_index(drop=True)
+#     df_val = cv_set["val"][split].reset_index(drop=True)
+#     trainset = DopplerDataset(df_train, transform=transform["train"])
+#     valset = DopplerDataset(df_val, transform=transform["test"])
+#     model_name = "mobilenet_v3_large-pretrained-adam"
+#     model = get_model(model_name).to(DEVICE)
+#     lr = 1e-4
+#     n_epoch = 25
+#     bs = 16
+#     # filename = f"{model_name}-{lr}lr-{bs}bs-{n_epoch}e-split{split}-loss-weighted"
+#     filename = f"{model_name}-{lr}lr-{bs}bs-{n_epoch}e-split{split}-loss-normal"
+#     train_counts = df_train["label"].value_counts()
+#     val_counts = df_val["label"].value_counts()
+#     class_weights = list(1 / train_counts)
+#     sample_weights = [0] * len(df_train)
+#     for idx, row in df_train.iterrows():
+#         class_weight = class_weights[row["label"]]
+#         sample_weights[idx] = class_weight
+#     sampler = WeightedRandomSampler(
+#         sample_weights, num_samples=len(sample_weights), replacement=True
+#     )
+#     trainLoader = DataLoader(trainset, batch_size=bs, sampler=sampler)
+#     valLoader = DataLoader(valset, batch_size=1, shuffle=False)
+#     optimizer = optim.Adam(model.parameters(), lr=lr)
+#     # criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor(train_counts[1]/train_counts[0]))
+#     criterion = nn.BCEWithLogitsLoss()
+#     best_acc = 60.0
+#     for epoch in range(n_epoch):
+#         train_acc, train_loss = train(epoch, trainLoader, model, model_name, split)
+#         val_acc, val_loss = evaluate_val(epoch, valLoader, model, model_name, split)
+#         test_acc, test_loss = evaluate_test(epoch, testLoader, model, model_name, split)
+#         results[split]["train_acc"].append(train_acc)
+#         results[split]["train_loss"].append(train_loss)
+#         results[split]["val_acc"].append(val_acc)
+#         results[split]["val_loss"].append(val_loss)
+#         results[split]["test_acc"].append(test_acc)
+#         results[split]["test_loss"].append(test_loss)
+#         if val_acc > best_acc:
+#             best_acc = val_acc
+#             print(f"Best val {best_acc}, saving...")
+#             # torch.save(model, f"../model/{filename}-{best_acc}val-{epoch}e.pth")
+
+# a_file = open(f"result_cv/{filename}.pkl", "wb")
+# pickle.dump(results, a_file)
+# a_file.close()
 
 
 
