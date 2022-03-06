@@ -1,7 +1,8 @@
-import os
-from pathlib import Path
+# preprocess raw data
 
+import os
 import numpy as np
+from pathlib import Path
 from PIL import Image, ImageFilter
 
 

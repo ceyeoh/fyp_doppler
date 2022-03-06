@@ -1,3 +1,5 @@
+# plot results
+
 import pandas as pd
 from pathlib import Path
 import plotly.express as px
@@ -8,8 +10,8 @@ data = [str(i) for i in list(path.glob("*.csv"))]
 
 totalData = []
 result = {"model": [], "train_acc": [], "val_acc": [], "test_acc": []}
+
 for i in data:
-    # model = i.split("\\")[-1].split(".csv")[0]
     model = "-".join(i.split("\\")[-1].split("-")[:2])
     df_temp = pd.read_csv(i)
     df_temp["model"] = model
@@ -28,11 +30,22 @@ for i in df.columns[1:-1]:
     fig = px.line(df, x="epoch", y=i, color="model", markers=True, title=i)
     fig.show()
 
-fig = go.Figure(data=[
-    go.Bar(name='test_acc', y=result["model"], x=result["test_acc"], orientation='h'),
-    go.Bar(name='val_acc', y=result["model"], x=result["val_acc"], orientation='h'),
-    go.Bar(name='train_acc', y=result["model"], x=result["train_acc"], orientation='h'),
-])
+fig = go.Figure(
+    data=[
+        go.Bar(
+            name="test_acc", y=result["model"], x=result["test_acc"], orientation="h"
+        ),
+        go.Bar(name="val_acc", y=result["model"], x=result["val_acc"], orientation="h"),
+        go.Bar(
+            name="train_acc", y=result["model"], x=result["train_acc"], orientation="h"
+        ),
+    ]
+)
 
-fig.update_layout(title='best val results', barmode='stack', yaxis={'categoryorder':'total ascending'})
+fig.update_layout(
+    title="best val results",
+    barmode="stack",
+    yaxis={"categoryorder": "total ascending"},
+)
+
 fig.show()

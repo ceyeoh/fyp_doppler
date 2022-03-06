@@ -2,7 +2,7 @@ import io
 import base64
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from .utils import allowed_file, find_y, find_x, loader
-from .model import inference
+from .inference import inference
 from flask_login import login_required, current_user
 from .database import Appointment
 from . import db
@@ -39,14 +39,11 @@ def appointment():
             flash("Please enter comments.", category="error")
         else:
             new_appointment = Appointment(
-                date=date,
-                comment=comment,
-                user_id=current_user.id
+                date=date, comment=comment, user_id=current_user.id
             )
             db.session.add(new_appointment)
             db.session.commit()
             flash("Appointment has been requested.", category="success")
-            # return redirect(url_for("views.appointment"))
     return render_template("appointment.html", user=current_user)
 
 
@@ -74,9 +71,12 @@ def diagnose():
             decoded_img_data = encoded_img_data.decode("utf-8")
             img_data.append(decoded_img_data)
         out = inference(imgList)
-        return render_template("diagnose.html", img_data=img_data, res=out, user=current_user)
+        return render_template(
+            "diagnose.html", img_data=img_data, res=out, user=current_user
+        )
     else:
         return render_template("diagnose.html", user=current_user)
+
 
 @views.route("/delete-appointment", methods=["POST"])
 @login_required
@@ -90,6 +90,7 @@ def delete_appointment():
             db.session.commit()
             flash("Appointment has been cancelled.", category="success")
     return jsonify({})
+
 
 @views.route("/sample-ultrasound")
 @login_required

@@ -1,3 +1,5 @@
+# plot cross-validation results
+
 import pandas as pd
 import pickle
 
@@ -6,17 +8,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-# path = Path("result_cv/")
-# data = [str(i) for i in list(path.glob("*.pkl"))]
-
-# print(data)
-a_file = open(
+# change filename in result_cv folder to visualize different model results
+file = open(
     "result_cv/densenet121-pretrained-adam-0.0001lr-16bs-25e-split7-loss-normal.pkl",
     "rb",
 )
-model_name = "-".join(a_file.name.split("/")[-1].split("-")[:2])
-# print(model_name)
-results = pickle.load(a_file)
+model_name = "-".join(file.name.split("/")[-1].split("-")[:2])
+results = pickle.load(file)
 
 train_acc = [results[i]["train_acc"] for i in results]
 train_loss = [results[i]["train_loss"] for i in results]

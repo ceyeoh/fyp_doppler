@@ -14,14 +14,12 @@ cpu = torch.load(
     "model/densenet121-pretrained-adam-0.0001lr-16bs-25e-80.0val-7e.pth",
     map_location=torch.device("cpu"),
 )
-
 cpu.eval()
 
 
 def inference(imgList: list):
     img = [transform(i) for i in imgList]
     img = torch.stack(img)
-
     with torch.no_grad():
         outputs = cpu(img)
     prob = [torch.sigmoid(output) for output in outputs]
