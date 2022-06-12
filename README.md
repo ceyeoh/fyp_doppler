@@ -26,3 +26,32 @@ Develop a system that able to detect FGR in the second trimester of pregnancy th
 ## Model weights
 
 - [Densenet121](https://drive.google.com/file/d/1gMfEDtjxtKI0CZNmoXccRJv2VPwnu5AH/view?usp=sharing)
+
+## Results
+
+**Test Result**
+<br>
+![testresult](readmeScr/test-result.png "test result")
+<br>
+<br>
+**Classification Report**
+<br>
+![classification-report](readmeScr/classification-report.png "classification report")
+<br>
+<br>
+**Confusion Matrix**
+<br>
+![confusion-matrix](readmeScr/confusion-matrix.png "confusion matrix")
+<br>
+<br>
+
+## Screenshots
+
+**Home Page**
+<br>
+![home](readmeScr/home-page.png "home page")
+<br>
+<br>
+**Inference Page**
+<br>
+![inference](readmeScr/inference.png "inference page")
